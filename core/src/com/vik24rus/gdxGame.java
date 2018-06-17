@@ -1,33 +1,24 @@
 package com.vik24rus;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Game;
 
-public class gdxGame extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
+//https://libgdx.info/buttons-scene2d/
+//https://habr.com/post/224175/
+//https://habr.com/sandbox/101382/
+//https://habr.com/post/314312/
+
+public class gdxGame extends Game {
+	//public BitmapFont font;
 	
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+	//	font = new BitmapFont();
+		this.setScreen(new Menu(this));  //благодаря такой инициализации можно к примеру тут инициализировать
+		                                         // шрифт и передать его в скрин Menu
 	}
-
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+		super.render();
 	}
-	
-	@Override
-	public void dispose () {
-		batch.dispose();
-		img.dispose();
-	}
+
 }
