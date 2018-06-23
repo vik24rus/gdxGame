@@ -36,7 +36,7 @@ public class Menu implements Screen {
         this.mygame = mygame;
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 600);
+        camera.setToOrtho(false, 1280, 700);
 
         Label.LabelStyle headerStyle = new Label.LabelStyle();
         BitmapFont headerFont = new BitmapFont(Gdx.files.internal("fonts/mySegoe.fnt"));
@@ -128,7 +128,7 @@ public class Menu implements Screen {
     @Override
     public void hide() {
         //Gdx.app.log("SYS","HIDE");
-        //dipose(); // вызывать вручную т.к. dispose() не вызвался при переключении на другой Screen
+        //dispose(); // вызывать вручную т.к. dispose() не вызвался при переключении на другой Screen
     }
 
     @Override
