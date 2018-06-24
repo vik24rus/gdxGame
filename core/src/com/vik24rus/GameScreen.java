@@ -39,8 +39,8 @@ public class GameScreen implements Screen, InputProcessor {
     private TextButton delPlanet;
 
 
-    public GameScreen(final gdxGame mygame) {
-        this.mygame = mygame;
+    public GameScreen(final gdxGame game) {
+        this.mygame = game;
 
 //        PARALLAX
 //        stage = new Stage(new ScreenViewport());
@@ -63,12 +63,16 @@ public class GameScreen implements Screen, InputProcessor {
         multiplexer = new InputMultiplexer(uiStage, gameStage, this);
 
         uiTable = new Table();
-        uiTable.setWidth(uiStage.getWidth());
-        uiTable.align(Align.center|Align.top);
-        uiTable.setPosition(0, Gdx.graphics.getHeight());
 
-        addShip = new TextButton("Add Ship" , glassySkin);
-        delShip = new TextButton("Del Ship" , glassySkin);
+        //Gdx.app.log("!!!" , String.valueOf(uiStage.getWidth()));
+        uiTable.setWidth(uiStage.getWidth());
+        uiTable.setHeight(uiStage.getHeight());
+
+        //uiTable.align(Align.center|Align.top);
+        //uiTable.setPosition(0, Gdx.graphics.getHeight());
+
+        addShip = new TextButton("Add Ship" , glassySkin , "small");
+        delShip = new TextButton("Del Ship" , glassySkin , "small");
         addShip.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -83,10 +87,12 @@ public class GameScreen implements Screen, InputProcessor {
             }
         });
 
-        uiTable.padTop(30);
-        uiTable.add(addShip).padBottom(30);
-        uiTable.row();
+        uiTable.left().bottom();
+        uiTable.add(addShip);
         uiTable.add(delShip);
+
+        uiTable.right().top();
+        uiTable.add(addShip);
         uiTable.setDebug(true);
 
         Group planets =  new Group();

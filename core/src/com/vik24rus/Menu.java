@@ -30,38 +30,42 @@ public class Menu implements Screen {
     private TextButton quitButton;
     private SpriteBatch batch;
     private Sprite sprite;
-    private Label outputLabel;
+    private Skin glassySkin;
 
-    public Menu(final gdxGame mygame) {
-        this.mygame = mygame;
+    public Menu(final gdxGame game) {
+        this.mygame = game;
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 700);
 
-        Label.LabelStyle headerStyle = new Label.LabelStyle();
-        BitmapFont headerFont = new BitmapFont(Gdx.files.internal("fonts/mySegoe.fnt"));
-        headerStyle.font = headerFont;
+//        Label.LabelStyle headerStyle = new Label.LabelStyle();
+//        BitmapFont headerFont = new BitmapFont(Gdx.files.internal("fonts/mySegoe.fnt"));
+//        headerStyle.font = headerFont;
+        glassySkin = new Skin(Gdx.files.internal("glassy/skin/glassy-ui.json"));
 
-        Skin glassySkin = new Skin(Gdx.files.internal("glassy/skin/glassy-ui.json"));
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
         table = new Table();
+//       table.setWidth(stage.getWidth());
+//       table.setHeight(stage.getHeight());
         table.setWidth(stage.getWidth()); //ширина стола
         table.align(Align.center|Align.top);
         table.setPosition(0, Gdx.graphics.getHeight());
 
         startButton = new TextButton("New Game" , glassySkin);
         quitButton = new TextButton("Quit Game" , glassySkin);
-        Label headerLabel = new Label("SUPER GAME NAME",headerStyle);
+        Label headerLabel = new Label("SUPER GAME NAME" , glassySkin);
 
 
-        table.padTop(10);
+        //table.padTop(10);
         table.add(headerLabel).padBottom(50);
         table.row();
         table.add(startButton).padBottom(200);
         table.row();
         table.add(quitButton);
+        table.setDebug(true);
+
         stage.addActor(table);
 
         batch = new SpriteBatch();
@@ -72,7 +76,6 @@ public class Menu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 mygame.setScreen(new GameScreen(mygame));
                 dispose();
-                //Gdx.app.log("YEEEEEEES", "WOW");
             }
         });
 
@@ -128,12 +131,13 @@ public class Menu implements Screen {
     @Override
     public void hide() {
         //Gdx.app.log("SYS","HIDE");
-        //dispose(); // вызывать вручную т.к. dispose() не вызвался при переключении на другой Screen
+
     }
 
     @Override
     public void dispose() {
         stage.dispose();
-        mygame.dispose();
+        glassySkin.dispose();
+
     }
 }
