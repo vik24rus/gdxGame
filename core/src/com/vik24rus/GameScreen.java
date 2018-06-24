@@ -4,13 +4,17 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class GameScreen implements Screen, InputProcessor {
     final gdxGame mygame;
@@ -32,16 +36,16 @@ public class GameScreen implements Screen, InputProcessor {
     private TextButton delShip;
     private TextButton delPlanet;
     private Label FPSLabel;
-    private String FPSString;
     private Label ZoomLabel;
 
+    private boolean addShipIsActive , delShipIsActive  = false;
 
     public GameScreen(final gdxGame game) {
         this.mygame = game;
         Gdx.app.log("INFO" , "GAME START");
         glassySkin = new Skin(Gdx.files.internal("glassy/skin/glassy-ui.json"));
-        gameStage = new Stage(new ScreenViewport());
-        uiStage = new Stage(new ScreenViewport());
+        gameStage = new Stage();
+        uiStage = new Stage();
 
         multiplexer = new InputMultiplexer(uiStage, gameStage, this);
 
@@ -64,33 +68,32 @@ public class GameScreen implements Screen, InputProcessor {
         addShip.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("YEEEEEEES", "WOW");
+                addShipIsActive = true;
             }
         });
 
         delShip.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("YEEEEEEES", "WOW");
+
             }
         });
 
         addPlanet.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("YEEEEEEES", "WOW");
+
             }
         });
 
         delPlanet.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("YEEEEEEES", "WOW");
+
             }
         });
 
         uiTable.add().expand().fill().colspan(2).left().right();
-        //uiTable.add(FPSLabel).left().prefWidth(150);
         uiTable.row();
         uiTable.add(addShip).left().prefWidth(150);
         uiTable.add(addPlanet).left().prefWidth(150);
@@ -117,11 +120,11 @@ public class GameScreen implements Screen, InputProcessor {
         });
 
         uiStage.addActor(uiTable);
-        gameStage.addActor(map); //TODO map on gameSage is correct?
 
-        camera = (OrthographicCamera) gameStage.getViewport().getCamera();
-        camera.viewportWidth = 1280;
-        camera.viewportHeight = 700;
+        gameStage.addActor(map); //TODO map on gameSage is correct?
+        camera = (OrthographicCamera) gameStage.getViewport().getCamera(); //TODO how it's work???
+        camera.viewportWidth = 1024;
+        camera.viewportHeight = 768;
         camera.translate(0,0);
         camera.zoom = 1.0f;
         Gdx.input.setInputProcessor(multiplexer);
@@ -149,6 +152,20 @@ public class GameScreen implements Screen, InputProcessor {
 
         FPSLabel.setText("FPS: " + Float.toString (Gdx.graphics.getFramesPerSecond()));
         ZoomLabel.setText("Zoom: " + Float.toString(camera.zoom));
+
+        if(addShipIsActive==true) {
+            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                Gdx.app.log("INFO", Float.toString(Gdx.input.getX()) + " " + Float.toString(Gdx.input.getY()));
+
+                Vector2 clickPos = new Vector2(Gdx.input.getX(), camera.viewportHeight - Gdx.input.getY());
+                Vector3 worldCoordinates = camera.unproject(new Vector3(clickPos, 0));
+                //Ship shipActor = new Ship(Gdx.input.getX(), Gdx.input.getY());
+                Ship shipActor = new Ship(worldCoordinates.x,worldCoordinates.y);
+                gameStage.addActor(shipActor);
+                addShipIsActive = false;
+                //http://www.java-gaming.org/index.php?topic=36576.0 TODO WORLD COORDINATES
+            }
+        }
     }
 
     public void cameraMooving(){
@@ -203,6 +220,7 @@ public class GameScreen implements Screen, InputProcessor {
             camMoveUp = true;
         if (keycode==Input.Keys.DOWN)
             camMoveDown = true;
+
         return true;
     }
 
