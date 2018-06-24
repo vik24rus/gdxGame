@@ -7,14 +7,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class GameScreen implements Screen, InputProcessor {
@@ -22,57 +17,50 @@ public class GameScreen implements Screen, InputProcessor {
     private OrthographicCamera camera;
 
     private Table uiTable;
+    private Skin glassySkin;
     private Stage uiStage;
     private Stage gameStage;
     private InputMultiplexer multiplexer;
     private Group planets;
     private Group ships;
 
-    private boolean camMooveRigt = false;
-    private boolean camMooveLeft = false;
-    private boolean camMooveUp = false;
-    private boolean camMooveDown = false;
+    private boolean camMoveRight , camMoveLeft , camMoveUp,camMoveDown  = false;
+
 
     private TextButton addShip;
     private TextButton addPlanet;
     private TextButton delShip;
     private TextButton delPlanet;
+    private Label FPSLabel;
+    private String FPSString;
+    private Label ZoomLabel;
 
 
     public GameScreen(final gdxGame game) {
         this.mygame = game;
-
-//        PARALLAX
-//        stage = new Stage(new ScreenViewport());
-//        camera = (OrthographicCamera) stage.getViewport().getCamera();
-//
-//        Array<Texture> textures = new Array<Texture>();
-//        for(int i = 1; i <=6;i++){
-//            textures.add(new Texture(Gdx.files.internal("parallax/img"+i+".png")));
-//            textures.get(textures.size-1).setWrap(Texture.TextureWrap.MirroredRepeat, Texture.TextureWrap.MirroredRepeat);
-//        }
-//
-//        ParallaxBackground parallaxBackground = new ParallaxBackground(textures);
-//        parallaxBackground.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-//        parallaxBackground.setSpeed(1);
-//        stage.addActor(parallaxBackground);
-        Skin glassySkin = new Skin(Gdx.files.internal("glassy/skin/glassy-ui.json"));
+        Gdx.app.log("INFO" , "GAME START");
+        glassySkin = new Skin(Gdx.files.internal("glassy/skin/glassy-ui.json"));
         gameStage = new Stage(new ScreenViewport());
         uiStage = new Stage(new ScreenViewport());
 
         multiplexer = new InputMultiplexer(uiStage, gameStage, this);
 
         uiTable = new Table();
-
-        //Gdx.app.log("!!!" , String.valueOf(uiStage.getWidth()));
-        uiTable.setWidth(uiStage.getWidth());
-        uiTable.setHeight(uiStage.getHeight());
-
-        //uiTable.align(Align.center|Align.top);
-        //uiTable.setPosition(0, Gdx.graphics.getHeight());
+        //uiTable.setFillParent(true); //???
+        uiTable.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        //uiTable.setWidth(uiStage.getWidth());
+        //uiTable.setHeight(uiStage.getHeight());
 
         addShip = new TextButton("Add Ship" , glassySkin , "small");
         delShip = new TextButton("Del Ship" , glassySkin , "small");
+        addPlanet = new TextButton("Add Planet" , glassySkin , "small");
+        delPlanet = new TextButton("Del Planet" , glassySkin , "small");
+
+        ZoomLabel = new Label( "", glassySkin , "black");
+        FPSLabel = new Label( "", glassySkin , "black");
+
+
+
         addShip.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -87,15 +75,34 @@ public class GameScreen implements Screen, InputProcessor {
             }
         });
 
-        uiTable.left().bottom();
-        uiTable.add(addShip);
-        uiTable.add(delShip);
+        addPlanet.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("YEEEEEEES", "WOW");
+            }
+        });
 
-        uiTable.right().top();
-        uiTable.add(addShip);
-        uiTable.setDebug(true);
+        delPlanet.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("YEEEEEEES", "WOW");
+            }
+        });
 
-        Group planets =  new Group();
+        uiTable.add().expand().fill().colspan(2).left().right();
+        //uiTable.add(FPSLabel).left().prefWidth(150);
+        uiTable.row();
+        uiTable.add(addShip).left().prefWidth(150);
+        uiTable.add(addPlanet).left().prefWidth(150);
+        uiTable.row();
+        uiTable.add(delShip).left().prefWidth(150);
+        uiTable.add(delPlanet).left().prefWidth(150);
+        uiTable.row();
+        uiTable.add(FPSLabel).left().prefWidth(150);
+        uiTable.add(ZoomLabel).left().prefWidth(150);
+        //uiTable.setDebug(true);
+
+        Group planets =  new Group(); //TODO Groups Actors
         Group ships = new Group();
 
         Image map = new Image(new Texture("res/map.png"));
@@ -110,7 +117,7 @@ public class GameScreen implements Screen, InputProcessor {
         });
 
         uiStage.addActor(uiTable);
-        gameStage.addActor(map);
+        gameStage.addActor(map); //TODO map on gameSage is correct?
 
         camera = (OrthographicCamera) gameStage.getViewport().getCamera();
         camera.viewportWidth = 1280;
@@ -123,41 +130,38 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void show() {
-        // start the playback of the background music
-        // when the screen is shown
-        //rainMusic.play();
-        //example
-        // PARALLAX
-        //Gdx.input.setInputProcessor(stage);
-
+        //GameMusic.play();
     }
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         camera.update();
-        // PARALLAX
-        //stage.act();
-        //stage.draw();
-        uiStage.act();
-        gameStage.act();
+        uiStage.act(Gdx.graphics.getDeltaTime());
+
+        gameStage.act(Gdx.graphics.getDeltaTime());
         gameStage.draw();
         uiStage.draw();
+
         cameraMooving();
+
+        FPSLabel.setText("FPS: " + Float.toString (Gdx.graphics.getFramesPerSecond()));
+        ZoomLabel.setText("Zoom: " + Float.toString(camera.zoom));
     }
 
     public void cameraMooving(){
-        if (camMooveLeft == true){
+        if (camMoveLeft == true){
             camera.translate(-5, 0 ,0);
         }
-        if (camMooveRigt == true){
+        if (camMoveRight == true){
             camera.translate(+5, 0 ,0);
         }
-        if (camMooveUp == true){
+        if (camMoveUp == true){
             camera.translate(0, +5 ,0);
         }
-        if (camMooveDown == true){
+        if (camMoveDown == true){
             camera.translate(0, -5 ,0);
         }
     }
@@ -184,32 +188,34 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
-
+        glassySkin.dispose();
+        uiStage.dispose();
+        gameStage.dispose();
     }
 
     @Override
     public boolean keyDown(int keycode) {
         if (keycode==Input.Keys.LEFT)
-            camMooveLeft = true;
+            camMoveLeft = true;
         if (keycode==Input.Keys.RIGHT)
-            camMooveRigt = true;
+            camMoveRight = true;
         if (keycode==Input.Keys.UP)
-            camMooveUp = true;
+            camMoveUp = true;
         if (keycode==Input.Keys.DOWN)
-            camMooveDown = true;
+            camMoveDown = true;
         return true;
     }
 
     @Override
     public boolean keyUp(int keycode) {
         if (keycode==Input.Keys.LEFT)
-            camMooveLeft = false;
+            camMoveLeft = false;
         if (keycode==Input.Keys.RIGHT)
-            camMooveRigt = false;
+            camMoveRight = false;
         if (keycode==Input.Keys.UP)
-            camMooveUp = false;
+            camMoveUp = false;
         if (keycode==Input.Keys.DOWN)
-            camMooveDown = false;
+            camMoveDown = false;
         return true;
     }
 
@@ -240,8 +246,6 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public boolean scrolled(int amount) {
-        Gdx.app.log( "INFO" , "ZOOM" + camera.zoom);
-        Gdx.app.log( "INFO" , "amount" + amount);
         if ( (camera.zoom != 1.0f && amount < 0) || (camera.zoom != 5.0f && amount > 0)) {
             camera.zoom += amount;
         }

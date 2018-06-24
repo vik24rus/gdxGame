@@ -33,19 +33,43 @@ public class TestForTable implements Screen {
         Label addressLabel = new Label("Address:", skin);
         TextField addressText = new TextField("", skin);
 
+        Label nameLabel2 = new Label("1111:", skin);
+        TextField nameText2 = new TextField("", skin);
+        Label addressLabel2 = new Label("Address:", skin);
+        TextField addressText2 = new TextField("", skin);
+
         Table table = new Table();
+        Table table2 = new Table();
 
         table.setWidth(stage.getWidth());
         table.setHeight(stage.getHeight());
-
-        table.add(nameLabel);              // Row 0, column 0.
-        table.add(nameText).width(100);    // Row 0, column 1.
+        //table.defaults().width(100);
+        //table.right().bottom(); //ориаентация виджетов
+        table.add(nameLabel);              // Row 0,  column 0. // .expandX(); расширени ячейки
+        table.add(nameText);    // Row 0, column 1.   // padLeft внутри ячейки сдвиги и изменения .padLeft(100).width(1000)
         table.row();                       // Move to next row.
+        //table.add().expand().fill(); // пустая ячейка
+        //table.row();
         table.add(addressLabel);           // Row 1, column 0.
-        table.add(addressText).width(100); // Row 1, column 1.
+        table.add(addressText); // Row 1, column 1.
+        table.row();
+        //table.add(table2);  //можно делать вложенные таблиы
+        //table.setFillParent(true);
         table.setDebug(true);
 
+        //table2.setWidth(stage.getWidth()); //можно и несколько Table делать
+        //table2.setHeight(stage.getHeight());
+        //table2.left().bottom(); //ориаентация виджетов
+//        table2.add(nameLabel2);              // Row 0, column 0.
+//        table2.add(nameText2);    // Row 0, column 1.   // padLeft внутри ячейки сдвиги и изменения .padLeft(100).width(1000)
+//        table2.row();                       // Move to next row.
+//        table2.add(addressLabel2);           // Row 1, column 0.
+//        table2.add(addressText2); // Row 1, column 1.
+//        //table.setFillParent(true);
+        table2.setDebug(true);
+
         stage.addActor(table);
+        //stage.addActor(table2);
     }
 
     @Override

@@ -1,21 +1,17 @@
 package com.vik24rus;
 
 
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class Menu implements Screen {
@@ -29,48 +25,33 @@ public class Menu implements Screen {
     private TextButton startButton;
     private TextButton quitButton;
     private SpriteBatch batch;
-    private Sprite sprite;
+    private Sprite backgroundSprite;
     private Skin glassySkin;
 
     public Menu(final gdxGame game) {
         this.mygame = game;
-
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 700);
-
+//userFonts
 //        Label.LabelStyle headerStyle = new Label.LabelStyle();
 //        BitmapFont headerFont = new BitmapFont(Gdx.files.internal("fonts/mySegoe.fnt"));
 //        headerStyle.font = headerFont;
         glassySkin = new Skin(Gdx.files.internal("glassy/skin/glassy-ui.json"));
-
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage);
-
-        table = new Table();
-//       table.setWidth(stage.getWidth());
-//       table.setHeight(stage.getHeight());
-        table.setWidth(stage.getWidth()); //ширина стола
-        table.align(Align.center|Align.top);
-        table.setPosition(0, Gdx.graphics.getHeight());
 
         startButton = new TextButton("New Game" , glassySkin);
-        quitButton = new TextButton("Quit Game" , glassySkin);
-        Label headerLabel = new Label("SUPER GAME NAME" , glassySkin);
+        quitButton = new TextButton("Quit" , glassySkin);
+        Label headerLabel = new Label("SUPER GAME NAME" , glassySkin , "big");
 
-
-        //table.padTop(10);
-        table.add(headerLabel).padBottom(50);
+        table = new Table();
+        table.setWidth(stage.getWidth());
+        table.setHeight(stage.getHeight());
+        table.add(headerLabel).padBottom(100);
         table.row();
-        table.add(startButton).padBottom(200);
+        table.add(startButton).padBottom(100);
         table.row();
         table.add(quitButton);
-        table.setDebug(true);
 
-        stage.addActor(table);
-
-        batch = new SpriteBatch();
-        sprite = new Sprite(new Texture(Gdx.files.internal("badlogic.jpg")));
-        sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         startButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -86,17 +67,20 @@ public class Menu implements Screen {
                 Gdx.app.exit();
             }
         });
+
+        batch = new SpriteBatch();
+        backgroundSprite = new Sprite(new Texture(Gdx.files.internal("badlogic.jpg")));
+        backgroundSprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+
+        Gdx.input.setInputProcessor(stage);
+        stage.addActor(table);
     }
 
 
 
     @Override
     public void show() {
-        // start the playback of the background music
-        // when the screen is shown
-        // rainMusic.play();
-        // example
-
+        // MenuMusic.play();
     }
 
     @Override
@@ -105,11 +89,10 @@ public class Menu implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.update();
         batch.begin();
-        sprite.draw(batch);
+        backgroundSprite.draw(batch);
         batch.end();
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
-//        mygame.setScreen(new GameScreen(mygame)); //переключение на следующий экран
 
     }
 
@@ -130,8 +113,6 @@ public class Menu implements Screen {
 
     @Override
     public void hide() {
-        //Gdx.app.log("SYS","HIDE");
-
     }
 
     @Override
